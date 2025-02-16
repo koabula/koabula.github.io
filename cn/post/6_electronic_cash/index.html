@@ -1,0 +1,613 @@
+<!doctype html>
+<html
+  dir="ltr"
+  lang="cn"
+  data-theme=""
+  
+    class="html theme--light"
+  
+><head>
+  <meta charset="utf-8" />
+  <title>
+    
+      
+        从零开始写一个区块链(六 电子货币) |
+      Chang
+
+  </title>
+
+  <meta name="generator" content="Hugo 0.143.1"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Chang" />
+  <meta
+    name="description"
+    content="一只学写代码的🐨"
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.8d4fad7e6916ad2e291e8d97ada157c70350d6d7150fea137e7243340967befb.css"
+      integrity="sha256-jU&#43;tfmkWrS4pHo2XraFXxwNQ1tcVD&#43;oTfnJDNAlnvvs="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.73ccfdf28df555e11009c13c20ced067af3cb021504cba43644c705930428b00.css"
+    integrity="sha256-c8z98o31VeEQCcE8IM7QZ688sCFQTLpDZExwWTBCiwA="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.137b1cf3cea9a8adb7884343a9a5ddddf4280f59153f74dc782fb7f7bf0d0519.css"
+    integrity="sha256-E3sc886pqK23iENDqaXd3fQoD1kVP3TceC&#43;3978NBRk="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.e65dc5b48fb5f39b142360c57c3a215744c94e56c755c929cc3e88fe12aab4d3.css"
+    integrity="sha256-5l3FtI&#43;185sUI2DFfDohV0TJTlbHVckpzD6I/hKqtNM="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.6f4f16d58da1c82c0c3a3436e021a3d39b4742f741192c546e73e947eacfd92f.css"
+    integrity="sha256-b08W1Y2hyCwMOjQ24CGj05tHQvdBGSxUbnPpR&#43;rP2S8="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.e10425ad768bc98ff1fb272a0ac8420f9d1ba22f0612c08ff1010c95080ffe7e.css"
+    integrity="sha256-4QQlrXaLyY/x&#43;ycqCshCD50boi8GEsCP8QEMlQgP/n4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://koabula.github.io/cn/post/6_electronic_cash/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.d6d329d93844b162e8bed1e915619625ca91687952177552b9b3e211014a2957.js"
+      integrity="sha256-1tMp2ThEsWLovtHpFWGWJcqRaHlSF3VSubPiEQFKKVc="
+      crossorigin="anonymous"
+    ></script>
+  
+
+  
+
+  
+
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://koabula.github.io/images/site-feature-image.png">
+  <meta name="twitter:title" content="从零开始写一个区块链(六 电子货币)">
+  <meta name="twitter:description" content="Electronic Cash 电子货币 好的，上一节我们实现了一个能够在区块链中能识别我们的身份并进行数字签名的钱包。这里我们开始向这个钱包里塞点钱。那么，我们的电子货币应该是什么样的呢？这一节我们先不推进我们的代码，让我们好好构思一下如何实现一个电子货币体系。
+货币是什么样的 我们的货币是什么样的？我们每天都在花钱，但是你花钱的时候有留意过你花的钱是什么样的吗。
+今天我们大部分人都使用微信或者支付宝这样的电子支付，当你在手机上输入支付密码(现在花钱越来越方便了，你或许只需要刷一下你的脸甚至是你的掌纹，就可以把钱花掉)，背后的一系列机构公司就将你的账户余额减去一定的数字，然后店家方账户余额增加一定的数字，这样就实现了交易。 你一定也用过现金，你从街上大爷那里拿一根糖葫芦，然后把一张五元的钞票给他，你们就快速实现了一次交易。
+这两个交易你都花了钱，但是显然给你的感受是不一样的。首先，我们使用钞票时每一张钞票上都有独一无二的编号，然而线上支付时只有账户上数字的变化，这是最本质的区别。我们在买糖葫芦时，可以直接拿一张5元的纸币给大爷，但是如果我们只有一张10元纸币，那么大爷就需要拿出一张5元找零给我们。但是在线上支付时我们只需要在程序中填一个数字(比如3.14)就可以实现支付。
+而对应到我们的加密货币中，这分别代表了我们的两个模型，一个是以比特币为代表的UTXO模型(Unspent Transaction Outputs)，一个是以以太坊为代表的账户模型。">
+
+
+
+  
+  <meta property="og:url" content="https://koabula.github.io/cn/post/6_electronic_cash/">
+  <meta property="og:site_name" content="My blog">
+  <meta property="og:title" content="从零开始写一个区块链(六 电子货币)">
+  <meta property="og:description" content="Electronic Cash 电子货币 好的，上一节我们实现了一个能够在区块链中能识别我们的身份并进行数字签名的钱包。这里我们开始向这个钱包里塞点钱。那么，我们的电子货币应该是什么样的呢？这一节我们先不推进我们的代码，让我们好好构思一下如何实现一个电子货币体系。
+货币是什么样的 我们的货币是什么样的？我们每天都在花钱，但是你花钱的时候有留意过你花的钱是什么样的吗。
+今天我们大部分人都使用微信或者支付宝这样的电子支付，当你在手机上输入支付密码(现在花钱越来越方便了，你或许只需要刷一下你的脸甚至是你的掌纹，就可以把钱花掉)，背后的一系列机构公司就将你的账户余额减去一定的数字，然后店家方账户余额增加一定的数字，这样就实现了交易。 你一定也用过现金，你从街上大爷那里拿一根糖葫芦，然后把一张五元的钞票给他，你们就快速实现了一次交易。
+这两个交易你都花了钱，但是显然给你的感受是不一样的。首先，我们使用钞票时每一张钞票上都有独一无二的编号，然而线上支付时只有账户上数字的变化，这是最本质的区别。我们在买糖葫芦时，可以直接拿一张5元的纸币给大爷，但是如果我们只有一张10元纸币，那么大爷就需要拿出一张5元找零给我们。但是在线上支付时我们只需要在程序中填一个数字(比如3.14)就可以实现支付。
+而对应到我们的加密货币中，这分别代表了我们的两个模型，一个是以比特币为代表的UTXO模型(Unspent Transaction Outputs)，一个是以以太坊为代表的账户模型。">
+  <meta property="og:locale" content="cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2024-12-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-12-10T00:00:00+00:00">
+    <meta property="og:image" content="https://koabula.github.io/images/site-feature-image.png">
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "post",
+        "name": "从零开始写一个区块链(六 电子货币)",
+        "headline": "从零开始写一个区块链(六 电子货币)",
+        "alternativeHeadline": "",
+        "description": "
+      
+        \u003ch2 id=\u0022electronic-cash-电子货币\u0022\u003eElectronic Cash 电子货币\u003c\/h2\u003e\n\u003cp\u003e好的，上一节我们实现了一个能够在区块链中能识别我们的身份并进行数字签名的钱包。这里我们开始向这个钱包里塞点钱。那么，我们的电子货币应该是什么样的呢？这一节我们先不推进我们的代码，让我们好好构思一下如何实现一个电子货币体系。\u003c\/p\u003e\n\u003chr\u003e\n\u003ch3 id=\u0022货币是什么样的\u0022\u003e货币是什么样的\u003c\/h3\u003e\n\u003cp\u003e我们的货币是什么样的？我们每天都在花钱，但是你花钱的时候有留意过你花的钱是什么样的吗。\u003c\/p\u003e\n\u003cp\u003e今天我们大部分人都使用微信或者支付宝这样的电子支付，当你在手机上输入支付密码(现在花钱越来越方便了，你或许只需要刷一下你的脸甚至是你的掌纹，就可以把钱花掉)，背后的一系列机构公司就将你的账户余额减去一定的数字，然后店家方账户余额增加一定的数字，这样就实现了交易。\n你一定也用过现金，你从街上大爷那里拿一根糖葫芦，然后把一张五元的钞票给他，你们就快速实现了一次交易。\u003c\/p\u003e\n\u003cp\u003e这两个交易你都花了钱，但是显然给你的感受是不一样的。首先，我们使用钞票时每一张钞票上都有独一无二的编号，然而线上支付时只有账户上数字的变化，这是最本质的区别。我们在买糖葫芦时，可以直接拿一张5元的纸币给大爷，但是如果我们只有一张10元纸币，那么大爷就需要拿出一张5元找零给我们。但是在线上支付时我们只需要在程序中填一个数字(比如3.14)就可以实现支付。\u003c\/p\u003e\n\u003cp\u003e而对应到我们的加密货币中，这分别代表了我们的两个模型，一个是以比特币为代表的UTXO模型(Unspent Transaction Outputs)，一个是以以太坊为代表的账户模型。\u003c\/p\u003e
+
+
+      
+
+
+    ",
+        "inLanguage": "cn",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/koabula.github.io\/cn\/post\/6_electronic_cash\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightYear" : "2024",
+        "dateCreated": "2024-12-10T00:00:00.00Z",
+        "datePublished": "2024-12-10T00:00:00.00Z",
+        "dateModified": "2024-12-10T00:00:00.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Chang",
+            "url": "https://koabula.github.io/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/koabula.github.io\/favicons\/favicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+        
+        "https://koabula.github.io/images/site-feature-image.png"
+
+
+      
+      ]
+
+    ,
+        "url" : "https:\/\/koabula.github.io\/cn\/post\/6_electronic_cash\/",
+        "wordCount" : "91",
+        "genre" : [ 
+      
+      "blockchain"
+
+    
+      
+        ,
+
+      
+      "web3"
+
+    ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+</head>
+<body class="body">
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/cn">Chang</a>
+        </div>
+      
+      <div class="sidebar__introduction-description">
+        <p>一只学写代码的🐨</p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://www.zhihu.com/people/jiang-nan-san-ren-59"
+            target="_blank"
+            rel="noopener me"
+            aria-label="Linkedin"
+            title="Linkedin"
+          >
+            <i class="fa-brands fa-zhihu fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://github.com/koabula"
+            target="_blank"
+            rel="noopener me"
+            aria-label="GitHub"
+            title="GitHub"
+          >
+            <i class="fa-brands fa-github fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="mailto:koabula@126.com"
+            target="_blank"
+            rel="noopener me"
+            aria-label="e-mail"
+            title="e-mail"
+          >
+            <i class="fa-solid fa-envelope fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-T0NN5Q0B29"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-T0NN5Q0B29');
+        }
+      </script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/post/"
+              
+              title=""
+              >文章</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/portfolio/"
+              
+              title=""
+              >项目</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/about/"
+              
+              title=""
+              >关于</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/contact/"
+              
+              title=""
+              >联系</a
+            >
+          </li>
+        
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+        <li class="nav__list-item">
+          <div class="optionswitch">
+            <input class="optionswitch__picker" type="checkbox" id="languagepicker" hidden />
+            <label class="optionswitch__label" for="languagepicker"
+              >CN <i class="fa fa-angle-down" aria-hidden="true"></i
+            ></label>
+            <div class="optionswitch__triangle"></div>
+            <ul class="optionswitch__list">
+              
+                <li class="optionswitch__list-item">
+                  <a href="/post/6_electronic_cash/" title="EN"
+                    ><span
+                      
+                      aria-label="EN"
+                      >EN</span
+                    >
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </li>
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+    "
+  >
+    
+    <div class="post__content">
+      
+        <h1>从零开始写一个区块链(六 电子货币)</h1>
+      
+      
+        <ul class="post__meta">
+          <li class="post__meta-item">
+            <em class="fas fa-calendar-day post__meta-icon"></em>
+            <span class="post__meta-text"
+              >
+                
+                  10/12/2024
+                
+
+              
+            </span>
+          </li>
+          <li class="post__meta-item">
+            <em class="fas fa-stopwatch post__meta-icon"></em>
+            <span class="post__meta-text">One-minute read</span>
+          </li>
+        </ul>
+      <h2 id="electronic-cash-电子货币">Electronic Cash 电子货币</h2>
+<p>好的，上一节我们实现了一个能够在区块链中能识别我们的身份并进行数字签名的钱包。这里我们开始向这个钱包里塞点钱。那么，我们的电子货币应该是什么样的呢？这一节我们先不推进我们的代码，让我们好好构思一下如何实现一个电子货币体系。</p>
+<hr>
+<h3 id="货币是什么样的">货币是什么样的</h3>
+<p>我们的货币是什么样的？我们每天都在花钱，但是你花钱的时候有留意过你花的钱是什么样的吗。</p>
+<p>今天我们大部分人都使用微信或者支付宝这样的电子支付，当你在手机上输入支付密码(现在花钱越来越方便了，你或许只需要刷一下你的脸甚至是你的掌纹，就可以把钱花掉)，背后的一系列机构公司就将你的账户余额减去一定的数字，然后店家方账户余额增加一定的数字，这样就实现了交易。
+你一定也用过现金，你从街上大爷那里拿一根糖葫芦，然后把一张五元的钞票给他，你们就快速实现了一次交易。</p>
+<p>这两个交易你都花了钱，但是显然给你的感受是不一样的。首先，我们使用钞票时每一张钞票上都有独一无二的编号，然而线上支付时只有账户上数字的变化，这是最本质的区别。我们在买糖葫芦时，可以直接拿一张5元的纸币给大爷，但是如果我们只有一张10元纸币，那么大爷就需要拿出一张5元找零给我们。但是在线上支付时我们只需要在程序中填一个数字(比如3.14)就可以实现支付。</p>
+<p>而对应到我们的加密货币中，这分别代表了我们的两个模型，一个是以比特币为代表的UTXO模型(Unspent Transaction Outputs)，一个是以以太坊为代表的账户模型。</p>
+<p>不过这两种模型只不过是实现方式的不同，归根结底无论是现金还是微信支付，最终实现的是一个状态转移，经过这个交易你的钱转移到了店家手里。所以无论是哪个模型，都是一个状态转移系统。</p>
+<hr>
+<h3 id="utxo模型">UTXO模型</h3>
+<p>我们先看看中本聪在比特币白皮书中是怎么描述的:</p>
+<blockquote>
+<p>We define an electronic coin as a chain of digital signatures. Each owner transfers the coin to the next by digitally signing a hash of the previous transaction and the public key of the next owner and adding these to the end of the coin. A payee can verify the signatures to verify the chain of ownership.</p></blockquote>
+<p><img src="../../images/tx.png" alt="alt text"></p>
+<p>中本聪将一枚电子货币定义为一条数字签名链。每笔交易有输入有输出，而新的交易将之前没有被花费的输出(UTXO)作为输入进行消费，这样将原本属于你的UTXO转移到了店家的地址下。我们看上图中间的那个交易，所有者1(花钱的)将之前的一笔交易和所有者2(收钱的)的公钥(或者地址)进行哈希，然后使用自己的私钥进行签名，这样就组成了一笔交易。然后将这个交易广播到区块链网络中达到共识，就实现了将钱转给所有者2的步骤。</p>
+<p>同时我们也会发现，在这个模型下我们的账户余额不是直接储存在区块链里的，我们需要将链上所有的属于我们的UTXO加起来才构成了我们的余额。而我们的支付也不是钱包表现的那么简单，支付时需要在钱包那么多的UTXO中选出能够支付目标的组合，然后将这个组合作为输入。输出也不是只有指向收款方一个那么简单，我们在比特币链上的支付需要向打包的节点支付gas费，如果我们的UTXO组合比较大，还会产生一个输出返回我们的钱包作为找零。</p>
+<p><strong>双花攻击:</strong> 对于这种现金模式的模型有一种攻击方式叫双花攻击。比如现实中我有一张百元大钞，这是一张真钱，于是我将这个钱复制一份，一张拿去吃饭，另一张拿去交学费，这就是双花。现实中我们选择提高复制现金的难度来解决这个问题，使得普通人无法实现复制这一步。但是在数字世界复制是一件再容易不过的事了，如果比特币是一个txt文件，我们可以简单地ctrl+c复制一份，一个拿去买房，一个拿去买车。
+比如上面这个图片中，我作为所有者1，可以使用所有者2的公钥和我的上一笔交易产生的UTXO创建转账给所有者2的交易，但同时我也可以使用同样的UTXO和我的另外一个钱包作为接收方创建另外一个交易，同时把两笔交易提交，是不是在实现买东西的同时还没有损失我的钱？</p>
+<p>这在比特币中是行不通的，因为其中一笔交易被节点接收后，你原本的UTXO就被花费了，在节点收到另外一个交易时交易的输入已经不是一个合法的UTXO了，那么交易就会失败。</p>
+<hr>
+<h3 id="账户模型">账户模型</h3>
+<p>人们谈到以太坊可能以为它只是在比特币的基础上增加了更强大的智能合约，但其实在数字货币的实现上它们也使用了不同的方式。以太坊上使用账户的概念，一个以太坊帐户包含四个字段：</p>
+<ul>
+<li>nonce，用于确保每笔交易只能处理一次的计数器</li>
+<li>帐户当前的以太币余额</li>
+<li>帐户的合约代码（若有）</li>
+<li>帐户的存储（默认为空）</li>
+</ul>
+<p>账户分为由私钥控制的外部帐户以及由其合约代码控制的合约帐户，合约的事我们先搁下不表。也就是说一个账户维护一个nonce变量(这个名字取得不好，容易和我们前面区块pow中的随机数混淆)和当前的余额，每当进行一个交易时，nonce变量自增，同时余额进行相应修改。这样的实现在逻辑上仿佛更符合我们对虚拟货币的想象。</p>
+<p><strong>重放攻击:</strong> 对于这种账户模式的转账也有一种攻击叫做重放攻击。想象你现在在便利店买水，你扫码给老板后打算离开，老板说刚刚没扫上，让你再来一次，这样你的钱就被花了两次。而一个人通过以太坊链转账给我，我是否能够将这个交易复制一遍重新广播给区块链，实现扣对面两次钱呢？</p>
+<p>答案自然是不行，这正是以为以太坊中维护了一个nonce变量，每次交易后这个变量会加一，而交易时会同时加入当前账户的nonce值进行提交。如果我们重放这个交易，网络会因为这个nonce已经过期而拒绝再次执行这个交易。</p>
+<hr>
+<p>今天整理了一下我们关于实现电子货币的思路，下一节我们将开始构建一个UTXO模型的电子货币体系，添加到我们的区块链中</p>
+<p><strong>插一嘴:白皮书</strong>
+比特币和以太坊的白皮书可以说是入门区块链的必读内容，在它们的官方网站上都可以查看，也有中文翻译版本(虽然存在一些错误)。同时它们的技术文档也是很好的阅读材料。</p>
+</div>
+    <div class="post__footer">
+      
+        <span><a class="category" href="/cn/categories/blockchain/">blockchain</a><a class="category" href="/cn/categories/web3/">web3</a></span>
+
+
+      
+
+      
+    </div>
+
+    
+  </div>
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-T0NN5Q0B29"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-T0NN5Q0B29');
+        }
+      </script></body>
+</html>

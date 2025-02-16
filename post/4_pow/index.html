@@ -1,0 +1,650 @@
+<!doctype html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  
+    class="html theme--light"
+  
+><head>
+  <meta charset="utf-8" />
+  <title>
+    
+      
+        从零开始写一个区块链(四 工作量证明) |
+      Chang
+
+  </title>
+
+  <meta name="generator" content="Hugo 0.143.1"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Chang" />
+  <meta
+    name="description"
+    content="一只学写代码的🐨"
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.8d4fad7e6916ad2e291e8d97ada157c70350d6d7150fea137e7243340967befb.css"
+      integrity="sha256-jU&#43;tfmkWrS4pHo2XraFXxwNQ1tcVD&#43;oTfnJDNAlnvvs="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.73ccfdf28df555e11009c13c20ced067af3cb021504cba43644c705930428b00.css"
+    integrity="sha256-c8z98o31VeEQCcE8IM7QZ688sCFQTLpDZExwWTBCiwA="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.137b1cf3cea9a8adb7884343a9a5ddddf4280f59153f74dc782fb7f7bf0d0519.css"
+    integrity="sha256-E3sc886pqK23iENDqaXd3fQoD1kVP3TceC&#43;3978NBRk="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.e65dc5b48fb5f39b142360c57c3a215744c94e56c755c929cc3e88fe12aab4d3.css"
+    integrity="sha256-5l3FtI&#43;185sUI2DFfDohV0TJTlbHVckpzD6I/hKqtNM="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.6f4f16d58da1c82c0c3a3436e021a3d39b4742f741192c546e73e947eacfd92f.css"
+    integrity="sha256-b08W1Y2hyCwMOjQ24CGj05tHQvdBGSxUbnPpR&#43;rP2S8="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.e10425ad768bc98ff1fb272a0ac8420f9d1ba22f0612c08ff1010c95080ffe7e.css"
+    integrity="sha256-4QQlrXaLyY/x&#43;ycqCshCD50boi8GEsCP8QEMlQgP/n4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://koabula.github.io/post/4_pow/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.d6d329d93844b162e8bed1e915619625ca91687952177552b9b3e211014a2957.js"
+      integrity="sha256-1tMp2ThEsWLovtHpFWGWJcqRaHlSF3VSubPiEQFKKVc="
+      crossorigin="anonymous"
+    ></script>
+  
+
+  
+
+  
+
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://koabula.github.io/images/site-feature-image.png">
+  <meta name="twitter:title" content="从零开始写一个区块链(四 工作量证明)">
+  <meta name="twitter:description" content="工作量证明 前面我们搭建了一个能够相互传输数据的p2p网络，现在我们希望使用这个网络维护一个区块链。我们现在应该让每个节点产生数据(比特币中的交易)后，发送给其他节点，然后一群数据打包为一个区块，将这个区块发送到网络中让大家都接受它，最后所有节点都将这个区块放入本地的区块链。
+但是，由谁来打包这个区块呢？为什么要接收节点A发送的区块而不是B的呢？这有很多种共识算法，我们下面介绍一下工作量证明(Proof Of Work)，有时候人们也叫这个过程挖矿。
+工作量证明(POW) 工作量证明的核心思想是通过计算一个复杂的数学问题，来证明某节点在区块链网络中进行了足够的工作，从而获得记账权(打包区块发给其他节点的)。这样说还是有些抽象，我们看一下工作量证明的基本流程:
+计算一个难题：网络中的节点需要解决一个复杂的数学难题，这个难题一般没有什么优化的解法，必须投入一定的算力才能解决，但是一旦有了答案便可以简单地验证 竞争记账权：每个节点都在竞争解决这个问题，第一个解决的节点获取记账权 打包和广播：获取记账权的节点将区块打包，广播给其他节点 验证区块：收到区块的节点验证这个难题的解，以及这个区块的有效性 奖励：成功打包区块的节点会获得一定的奖励(挖矿奖励) 我们回顾一下我们的区块，每个区块会由SHA256算法生成一个256位的哈希值。我们的工作量证明算法选择在每个区块中加入一个随机数(nonce)共同计算哈希值，寻找一个nonce使得区块的哈希值前n位都是0(即哈希值小于某个数)。由于哈希算法由很强的随机性，求一个符合条件的nonce的任何算法都和从0开始遍历效率是一样的。所以这是一个依赖于算力解决的问题。">
+
+
+
+  
+  <meta property="og:url" content="https://koabula.github.io/post/4_pow/">
+  <meta property="og:site_name" content="My blog">
+  <meta property="og:title" content="从零开始写一个区块链(四 工作量证明)">
+  <meta property="og:description" content="工作量证明 前面我们搭建了一个能够相互传输数据的p2p网络，现在我们希望使用这个网络维护一个区块链。我们现在应该让每个节点产生数据(比特币中的交易)后，发送给其他节点，然后一群数据打包为一个区块，将这个区块发送到网络中让大家都接受它，最后所有节点都将这个区块放入本地的区块链。
+但是，由谁来打包这个区块呢？为什么要接收节点A发送的区块而不是B的呢？这有很多种共识算法，我们下面介绍一下工作量证明(Proof Of Work)，有时候人们也叫这个过程挖矿。
+工作量证明(POW) 工作量证明的核心思想是通过计算一个复杂的数学问题，来证明某节点在区块链网络中进行了足够的工作，从而获得记账权(打包区块发给其他节点的)。这样说还是有些抽象，我们看一下工作量证明的基本流程:
+计算一个难题：网络中的节点需要解决一个复杂的数学难题，这个难题一般没有什么优化的解法，必须投入一定的算力才能解决，但是一旦有了答案便可以简单地验证 竞争记账权：每个节点都在竞争解决这个问题，第一个解决的节点获取记账权 打包和广播：获取记账权的节点将区块打包，广播给其他节点 验证区块：收到区块的节点验证这个难题的解，以及这个区块的有效性 奖励：成功打包区块的节点会获得一定的奖励(挖矿奖励) 我们回顾一下我们的区块，每个区块会由SHA256算法生成一个256位的哈希值。我们的工作量证明算法选择在每个区块中加入一个随机数(nonce)共同计算哈希值，寻找一个nonce使得区块的哈希值前n位都是0(即哈希值小于某个数)。由于哈希算法由很强的随机性，求一个符合条件的nonce的任何算法都和从0开始遍历效率是一样的。所以这是一个依赖于算力解决的问题。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2024-12-08T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-12-08T00:00:00+00:00">
+    <meta property="og:image" content="https://koabula.github.io/images/site-feature-image.png">
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "post",
+        "name": "从零开始写一个区块链(四 工作量证明)",
+        "headline": "从零开始写一个区块链(四 工作量证明)",
+        "alternativeHeadline": "",
+        "description": "
+      
+        \u003ch2 id=\u0022工作量证明\u0022\u003e工作量证明\u003c\/h2\u003e\n\u003cp\u003e前面我们搭建了一个能够相互传输数据的p2p网络，现在我们希望使用这个网络维护一个区块链。我们现在应该让每个节点产生数据(比特币中的交易)后，发送给其他节点，然后一群数据打包为一个区块，将这个区块发送到网络中让大家都接受它，最后所有节点都将这个区块放入本地的区块链。\u003c\/p\u003e\n\u003cp\u003e但是，由谁来打包这个区块呢？为什么要接收节点A发送的区块而不是B的呢？这有很多种共识算法，我们下面介绍一下工作量证明(Proof Of Work)，有时候人们也叫这个过程挖矿。\u003c\/p\u003e\n\u003ch3 id=\u0022工作量证明pow\u0022\u003e工作量证明(POW)\u003c\/h3\u003e\n\u003cp\u003e工作量证明的核心思想是通过计算一个复杂的数学问题，来证明某节点在区块链网络中进行了足够的工作，从而获得记账权(打包区块发给其他节点的)。这样说还是有些抽象，我们看一下工作量证明的基本流程:\u003c\/p\u003e\n\u003col\u003e\n\u003cli\u003e计算一个难题：网络中的节点需要解决一个复杂的数学难题，这个难题一般没有什么优化的解法，必须投入一定的算力才能解决，但是一旦有了答案便可以简单地验证\u003c\/li\u003e\n\u003cli\u003e竞争记账权：每个节点都在竞争解决这个问题，第一个解决的节点获取记账权\u003c\/li\u003e\n\u003cli\u003e打包和广播：获取记账权的节点将区块打包，广播给其他节点\u003c\/li\u003e\n\u003cli\u003e验证区块：收到区块的节点验证这个难题的解，以及这个区块的有效性\u003c\/li\u003e\n\u003cli\u003e奖励：成功打包区块的节点会获得一定的奖励(挖矿奖励)\u003c\/li\u003e\n\u003c\/ol\u003e\n\u003cp\u003e我们回顾一下我们的区块，每个区块会由SHA256算法生成一个256位的哈希值。我们的工作量证明算法选择在每个区块中加入一个随机数(nonce)共同计算哈希值，寻找一个nonce使得区块的哈希值前n位都是0(即哈希值小于某个数)。由于哈希算法由很强的随机性，求一个符合条件的nonce的任何算法都和从0开始遍历效率是一样的。所以这是一个依赖于算力解决的问题。\u003c\/p\u003e
+
+
+      
+
+
+    ",
+        "inLanguage": "en",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/koabula.github.io\/post\/4_pow\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightYear" : "2024",
+        "dateCreated": "2024-12-08T00:00:00.00Z",
+        "datePublished": "2024-12-08T00:00:00.00Z",
+        "dateModified": "2024-12-08T00:00:00.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Chang",
+            "url": "https://koabula.github.io/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/koabula.github.io\/favicons\/favicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+        
+        "https://koabula.github.io/images/site-feature-image.png"
+
+
+      
+      ]
+
+    ,
+        "url" : "https:\/\/koabula.github.io\/post\/4_pow\/",
+        "wordCount" : "138",
+        "genre" : [ 
+      
+      "blockchain"
+
+    
+      
+        ,
+
+      
+      "web3"
+
+    ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+</head>
+<body class="body">
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">Chang</a>
+        </div>
+      
+      <div class="sidebar__introduction-description">
+        <p>一只学写代码的🐨</p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://www.zhihu.com/people/jiang-nan-san-ren-59"
+            target="_blank"
+            rel="noopener me"
+            aria-label="Linkedin"
+            title="Linkedin"
+          >
+            <i class="fa-brands fa-zhihu fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://github.com/koabula"
+            target="_blank"
+            rel="noopener me"
+            aria-label="GitHub"
+            title="GitHub"
+          >
+            <i class="fa-brands fa-github fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="mailto:koabula@126.com"
+            target="_blank"
+            rel="noopener me"
+            aria-label="e-mail"
+            title="e-mail"
+          >
+            <i class="fa-solid fa-envelope fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-T0NN5Q0B29"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-T0NN5Q0B29');
+        }
+      </script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/post/"
+              
+              title=""
+              >Posts</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/portfolio/"
+              
+              title=""
+              >Projects</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/about/"
+              
+              title=""
+              >About</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/contact/"
+              
+              title=""
+              >Contact</a
+            >
+          </li>
+        
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+        <li class="nav__list-item">
+          <div class="optionswitch">
+            <input class="optionswitch__picker" type="checkbox" id="languagepicker" hidden />
+            <label class="optionswitch__label" for="languagepicker"
+              >EN <i class="fa fa-angle-down" aria-hidden="true"></i
+            ></label>
+            <div class="optionswitch__triangle"></div>
+            <ul class="optionswitch__list">
+              
+                <li class="optionswitch__list-item">
+                  <a href="/cn/post/4_pow/" title="CN"
+                    ><span
+                      
+                      aria-label="CN"
+                      >CN</span
+                    >
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </li>
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+    "
+  >
+    
+    <div class="post__content">
+      
+        <h1>从零开始写一个区块链(四 工作量证明)</h1>
+      
+      
+        <ul class="post__meta">
+          <li class="post__meta-item">
+            <em class="fas fa-calendar-day post__meta-icon"></em>
+            <span class="post__meta-text"
+              >
+                
+                  8/12/2024
+                
+
+              
+            </span>
+          </li>
+          <li class="post__meta-item">
+            <em class="fas fa-stopwatch post__meta-icon"></em>
+            <span class="post__meta-text">One-minute read</span>
+          </li>
+        </ul>
+      <h2 id="工作量证明">工作量证明</h2>
+<p>前面我们搭建了一个能够相互传输数据的p2p网络，现在我们希望使用这个网络维护一个区块链。我们现在应该让每个节点产生数据(比特币中的交易)后，发送给其他节点，然后一群数据打包为一个区块，将这个区块发送到网络中让大家都接受它，最后所有节点都将这个区块放入本地的区块链。</p>
+<p>但是，由谁来打包这个区块呢？为什么要接收节点A发送的区块而不是B的呢？这有很多种共识算法，我们下面介绍一下工作量证明(Proof Of Work)，有时候人们也叫这个过程挖矿。</p>
+<h3 id="工作量证明pow">工作量证明(POW)</h3>
+<p>工作量证明的核心思想是通过计算一个复杂的数学问题，来证明某节点在区块链网络中进行了足够的工作，从而获得记账权(打包区块发给其他节点的)。这样说还是有些抽象，我们看一下工作量证明的基本流程:</p>
+<ol>
+<li>计算一个难题：网络中的节点需要解决一个复杂的数学难题，这个难题一般没有什么优化的解法，必须投入一定的算力才能解决，但是一旦有了答案便可以简单地验证</li>
+<li>竞争记账权：每个节点都在竞争解决这个问题，第一个解决的节点获取记账权</li>
+<li>打包和广播：获取记账权的节点将区块打包，广播给其他节点</li>
+<li>验证区块：收到区块的节点验证这个难题的解，以及这个区块的有效性</li>
+<li>奖励：成功打包区块的节点会获得一定的奖励(挖矿奖励)</li>
+</ol>
+<p>我们回顾一下我们的区块，每个区块会由SHA256算法生成一个256位的哈希值。我们的工作量证明算法选择在每个区块中加入一个随机数(nonce)共同计算哈希值，寻找一个nonce使得区块的哈希值前n位都是0(即哈希值小于某个数)。由于哈希算法由很强的随机性，求一个符合条件的nonce的任何算法都和从0开始遍历效率是一样的。所以这是一个依赖于算力解决的问题。</p>
+<p>如果某个节点想要攻击某个区块，那么它必须重做这个工作量证明。而且改变了一个区块，后续的区块都需要改变，也就是说它需要产生一条新的分叉。在网络中节点选择承认最长的一条链，所以需要这条恶意分叉长度超过诚实分叉时攻击才成功。我们可以看到，工作量证明实际是一种基于算力投票的机制，最长的链代表了有最多的算力投入这条链。如果区块链中多数的算力被诚实节点掌握，那么诚实的链就会成为最长的一条链被承认。而如果某个组织的算力占据了链上算力51%以上，那么便产生安全风险(51%攻击)</p>
+<p>下面我们在我们的区块链上实现pow:</p>
+<ol>
+<li>首先我们需要修改<code>block</code>类，在区块头中加上nonce</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Block</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">merkle_tree</span><span class="p">:</span> <span class="n">MerkleTree</span><span class="p">,</span> <span class="n">previous_hash</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="k">if</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">timestamp</span>  <span class="c1"># 当前时间戳</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">merkle_tree</span> <span class="o">=</span> <span class="n">merkle_tree</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">merkle_root</span> <span class="o">=</span> <span class="n">merkle_tree</span><span class="o">.</span><span class="n">get_root_hash</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">previous_hash</span> <span class="o">=</span> <span class="n">previous_hash</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">nonce</span> <span class="o">=</span> <span class="n">nonce</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_hash</span><span class="p">()</span>
+</span></span></code></pre></div><ol start="2">
+<li>我们需要修改<code>blockchain</code>类，添加difficulty变量，也就是区块的哈希值前多少位需要为0。
+需要注意的是，在这里我们将difficulty直接写定为5，但实际上比特币中这个值是可变的，比特币使用移动平均数法来确定每小时生成区块的平均数，如果区块生成太快就加大difficulty。这样可以适应算力的不断增长。
+这里我们还做出了一个修改，在创建创世区块时将时间戳也固定下来，使得不同节点有一个相同的创世区块</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">BlockChain</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">chain</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">create_genesis_block</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">=</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">create_genesis_block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Block</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MerkleTree</span><span class="p">([</span><span class="s2">&#34;Genesis Block&#34;</span><span class="p">]),</span> <span class="s2">&#34;0&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span></code></pre></div><ol start="3">
+<li>最大的修改是节点类，下面是&quot;挖矿&quot;方法，我们开始挖这个区块时将所有数据打包到MerkleTree中，然后清空数据队列。我们将数据队列第一个数据初始化为节点自己的地址(对应比特币中第一笔交易是产生新的比特币转给创建者)。然后从0开始尝试nonce，如果挖矿成功，将这个区块接入本地区块链同时广播给其他节点。(这里的发送代码详见原代码文件，需要实现区块的序列化和反序列化)如果在成功之前便收到其他节点传来的有效区块，则结束这个循环，开始挖下一个区块。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">mine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_lock</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">merkle_tree</span> <span class="o">=</span> <span class="n">MerkleTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&#34;Created by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">nonce</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBlock</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blockchain</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">merkle_tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockchain</span><span class="o">.</span><span class="n">get_latest_block</span><span class="p">()</span><span class="o">.</span><span class="n">hash</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockchain</span><span class="o">.</span><span class="n">is_block_valid</span><span class="p">(</span><span class="n">block</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockchain_lock</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="bp">self</span><span class="o">.</span><span class="n">send_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="bp">self</span><span class="o">.</span><span class="n">blockchain</span><span class="o">.</span><span class="n">append_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Mined block </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2"> :</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">hash</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nonce</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">mine_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">mine</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_lock</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">getBlock</span><span class="o">=</span><span class="kc">False</span>
+</span></span></code></pre></div><ol start="4">
+<li>下面我们进行测试，通过终端输入信息广播给网络，然后画出前5个区块，查看效果如下，可以看到节点成功上传了数据并进行了挖矿
+<img src="../../images/image_4.png" alt="alt text"></li>
+</ol>
+<p><img src="../../images/blockchain_2.svg" alt="blc"></p>
+<blockquote>
+<p>为什么节点要打包数据？</p></blockquote>
+<p>我们可以发现，在区块链里，如果我们的节点在Merkle树中只储存第一个数据(也就是挖矿奖励)，那么挖矿成功也可以将这个只有一个数据的区块加入区块链，那么为什么还要浪费带宽和算力来接收其他节点的数据呢？当然，如果所有节点都这样的话，那今天的比特币或许早就无法正常运作了。</p>
+<p>这就要说到我们常说的gas费了，当你在web3钱包里转账时，你常常会发现你转账前后的金额有损失，这就是消费了gas费。当一个交易提交时，会向打包成功的节点支付一定比例的gas费作为激励，这样便使得节点愿意处理这些输入，毕竟有没有加这些数据对挖矿难度没有影响。</p>
+<p>而我们常说比特币是&quot;电子黄金&quot;，因为它的总量是不变的。这是由于每个区块的挖矿奖励会随着时间递减，每隔一段时间比特币会进行一次&quot;减半&quot;，也就是挖矿奖励变成之前的一半，这样一直到挖矿奖励比最小不可分割单位(聪)还小时彻底没有新的比特币产生。之后的挖矿激励全部变成了支付的gas费。</p>
+</div>
+    <div class="post__footer">
+      
+        <span><a class="category" href="/categories/blockchain/">blockchain</a><a class="category" href="/categories/web3/">web3</a></span>
+
+
+      
+
+      
+    </div>
+
+    
+  </div>
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-T0NN5Q0B29"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-T0NN5Q0B29');
+        }
+      </script></body>
+</html>

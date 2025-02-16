@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blockchain on My blog</title>
+    <link>https://koabula.github.io/cn/categories/blockchain/</link>
+    <description>Recent content in Blockchain on My blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>cn</language>
+    <lastBuildDate>Wed, 11 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://koabula.github.io/cn/categories/blockchain/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>从零开始写一个区块链(七 交易)</title>
+      <link>https://koabula.github.io/cn/post/7_transaction/</link>
+      <pubDate>Wed, 11 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/7_transaction/</guid>
+      
+        <description>&lt;h2 id=&#34;transaction&#34;&gt;Transaction&lt;/h2&gt;
+&lt;p&gt;我们上一节对我们的数字货币的实现方式进行了梳理，这里我们开始构建一个UTXO模型的电子货币体系，并把它加入我们的区块链网络中。&lt;/p&gt;
+&lt;p&gt;上一节我们说到，UTXO模型中所有的交易都至少有一个UTXO输入和一个UTXO输出，并且输入和输出的金额应该是一致的。就和我们使用现金消费一样，你拿出一叠总金额大于商品价格的现金组合给老板，老板将钱收下后计算多余的金额然后进行找零。原来你们两个一起共有一百块，交易后还是一百块。那么，钱一开始从哪里来呢？&lt;/p&gt;
+&lt;p&gt;在现实中，我们的人民币是从印钞厂印制出来，然后通过银行发行到全国。而在我们的区块链中则大不相同。回想我们POW那一节，我们说到对于拿到记账权的节点会将区块的第一笔交易设置为一个特殊交易，凭空产生一定的货币转到自己的地址中。这是比特币采用的方法，这个&amp;quot;一定的货币&amp;quot;的量随时间递减，称为比特币的&lt;strong&gt;减半&lt;/strong&gt;，所有比特币的总量是一定的，为2100万枚。而以太坊的发行量是动态的，是由协议规则、社区共识、EIP提案以及网络经济模型共同决定的。机制比较复杂，这里先按下不表。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;交易和utxo&#34;&gt;交易和UTXO&lt;/h3&gt;
+&lt;p&gt;下面我们开始实现Transaction和UTXO的实现&lt;/p&gt;
+&lt;p&gt;对于一个UTXO，我们需要记录的有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;产生这个UTXO的交易哈希值 : 比特币白皮书中说&amp;quot;我们将一枚电子货币定义为一条数字签名链&amp;quot;，我们便是通过这个给UTXO一路过来经历的交易将这些签名串到一起。而我们记录了交易的哈希值就可以找到这个交易，这个原理在本节最后再说&lt;/li&gt;
+&lt;li&gt;这个UTXO在交易输出中的索引 : 交易可以有多个输出，所以我们需要记录它的索引才可以找到它&lt;/li&gt;
+&lt;li&gt;UTXO的金额 : 这个不用解释了&lt;/li&gt;
+&lt;li&gt;接收者的地址 : 也就是目前这个UTXO拥有者的地址&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;UTXO&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;fm&#34;&gt;__init__&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tx_hash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;output_index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;amount&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;recipient_address&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tx_hash&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tx_hash&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 交易的哈希&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;output_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;output_index&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 输出在交易中的索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;amount&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;amount&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 金额&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;recipient_address&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;recipient_address&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 接收者(拥有者)的地址&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;而对于一个交易，我们需要记录的是:&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(六 电子货币)</title>
+      <link>https://koabula.github.io/cn/post/6_electronic_cash/</link>
+      <pubDate>Tue, 10 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/6_electronic_cash/</guid>
+      
+        <description>&lt;h2 id=&#34;electronic-cash-电子货币&#34;&gt;Electronic Cash 电子货币&lt;/h2&gt;
+&lt;p&gt;好的，上一节我们实现了一个能够在区块链中能识别我们的身份并进行数字签名的钱包。这里我们开始向这个钱包里塞点钱。那么，我们的电子货币应该是什么样的呢？这一节我们先不推进我们的代码，让我们好好构思一下如何实现一个电子货币体系。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;货币是什么样的&#34;&gt;货币是什么样的&lt;/h3&gt;
+&lt;p&gt;我们的货币是什么样的？我们每天都在花钱，但是你花钱的时候有留意过你花的钱是什么样的吗。&lt;/p&gt;
+&lt;p&gt;今天我们大部分人都使用微信或者支付宝这样的电子支付，当你在手机上输入支付密码(现在花钱越来越方便了，你或许只需要刷一下你的脸甚至是你的掌纹，就可以把钱花掉)，背后的一系列机构公司就将你的账户余额减去一定的数字，然后店家方账户余额增加一定的数字，这样就实现了交易。
+你一定也用过现金，你从街上大爷那里拿一根糖葫芦，然后把一张五元的钞票给他，你们就快速实现了一次交易。&lt;/p&gt;
+&lt;p&gt;这两个交易你都花了钱，但是显然给你的感受是不一样的。首先，我们使用钞票时每一张钞票上都有独一无二的编号，然而线上支付时只有账户上数字的变化，这是最本质的区别。我们在买糖葫芦时，可以直接拿一张5元的纸币给大爷，但是如果我们只有一张10元纸币，那么大爷就需要拿出一张5元找零给我们。但是在线上支付时我们只需要在程序中填一个数字(比如3.14)就可以实现支付。&lt;/p&gt;
+&lt;p&gt;而对应到我们的加密货币中，这分别代表了我们的两个模型，一个是以比特币为代表的UTXO模型(Unspent Transaction Outputs)，一个是以以太坊为代表的账户模型。&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(五 Who am I?)</title>
+      <link>https://koabula.github.io/cn/post/5_whoami/</link>
+      <pubDate>Mon, 09 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/5_whoami/</guid>
+      
+        <description>&lt;h2 id=&#34;who-am-i-&#34;&gt;Who am I ?&lt;/h2&gt;
+&lt;p&gt;前面我们实现了一个p2p的区块链网络，节点之间将网络中的数据打包到一个区块中，然后通过工作量证明构建一个区块链。我们后面会逐渐将这些数据换成交易信息，将这个区块链改造成一个数字货币系统。&lt;/p&gt;
+&lt;p&gt;我们要实现交易，首先就要对每个节点进行识别。在现实生活中，我们有很多识别自己的方法，比如说身份证号，银行卡号，学校里的学号等等。但是在区块链上，我们应该如何识别每一个节点呢？你可能听说过web3钱包会有一个地址，那这个地址是什么呢？&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;区块链中的身份&#34;&gt;区块链中的身份&lt;/h3&gt;
+&lt;p&gt;我们现在整理一下我们的需求，我们希望有一个地址能够唯一标识自己，所有想给我们打钱的人只需要知道这个地址就可以打钱给我们。同时我们要能证明这个地址是我的，我们可以把这个地址上的钱给花出去。你可能想到了第0节时我们谈到的数字签名，我们可以将公钥公布出去，其他人将支付的数字货币标记上我们的公钥；在我们想要花这笔钱时，通过私钥来证明这笔钱属于我们。这样就让我们在区块链中有了自己的身份。&lt;/p&gt;
+&lt;p&gt;我们通过一个&amp;quot;钱包&amp;quot;，来实现这些功能，当我们进入web3世界时，我们都需要一个web3钱包。比较有名的web3钱包是metamask，它的图标是一只小狐狸，支持以太坊等许多区块链的钱包，你可以在你的手机或者chrome浏览器上下载使用。如果你用过类似的web3钱包，你可能发现它们和刚刚说的想法好像不一样，这主要是因为下面这两点:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;地址&lt;/strong&gt;
+刚刚我们提到了使用公钥作为我们的标识，但实际中我们往往使用一个更短的数字来作为我们的钱包地址(钱包软件中那个0x开头的串)，这个地址是我们的公钥通过哈希和一些变换产生的。我们使用的哈希函数有抗碰撞性，所以该地址依旧可以唯一标识我们的钱包。
+为什么要多此一举？首先，通过哈希等一系列变换，地址的长度比公钥会更短，这在使用的时候更方便；同时，生成地址时会使用校验位，避免用户将数字货币转账到一个错误的地址；并且，使用地址避免了公钥的暴露，增加了隐私保护。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;插一嘴:量子计算&lt;/strong&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(四 工作量证明)</title>
+      <link>https://koabula.github.io/cn/post/4_pow/</link>
+      <pubDate>Sun, 08 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/4_pow/</guid>
+      
+        <description>&lt;h2 id=&#34;工作量证明&#34;&gt;工作量证明&lt;/h2&gt;
+&lt;p&gt;前面我们搭建了一个能够相互传输数据的p2p网络，现在我们希望使用这个网络维护一个区块链。我们现在应该让每个节点产生数据(比特币中的交易)后，发送给其他节点，然后一群数据打包为一个区块，将这个区块发送到网络中让大家都接受它，最后所有节点都将这个区块放入本地的区块链。&lt;/p&gt;
+&lt;p&gt;但是，由谁来打包这个区块呢？为什么要接收节点A发送的区块而不是B的呢？这有很多种共识算法，我们下面介绍一下工作量证明(Proof Of Work)，有时候人们也叫这个过程挖矿。&lt;/p&gt;
+&lt;h3 id=&#34;工作量证明pow&#34;&gt;工作量证明(POW)&lt;/h3&gt;
+&lt;p&gt;工作量证明的核心思想是通过计算一个复杂的数学问题，来证明某节点在区块链网络中进行了足够的工作，从而获得记账权(打包区块发给其他节点的)。这样说还是有些抽象，我们看一下工作量证明的基本流程:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;计算一个难题：网络中的节点需要解决一个复杂的数学难题，这个难题一般没有什么优化的解法，必须投入一定的算力才能解决，但是一旦有了答案便可以简单地验证&lt;/li&gt;
+&lt;li&gt;竞争记账权：每个节点都在竞争解决这个问题，第一个解决的节点获取记账权&lt;/li&gt;
+&lt;li&gt;打包和广播：获取记账权的节点将区块打包，广播给其他节点&lt;/li&gt;
+&lt;li&gt;验证区块：收到区块的节点验证这个难题的解，以及这个区块的有效性&lt;/li&gt;
+&lt;li&gt;奖励：成功打包区块的节点会获得一定的奖励(挖矿奖励)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我们回顾一下我们的区块，每个区块会由SHA256算法生成一个256位的哈希值。我们的工作量证明算法选择在每个区块中加入一个随机数(nonce)共同计算哈希值，寻找一个nonce使得区块的哈希值前n位都是0(即哈希值小于某个数)。由于哈希算法由很强的随机性，求一个符合条件的nonce的任何算法都和从0开始遍历效率是一样的。所以这是一个依赖于算力解决的问题。&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(三 P2P网络)</title>
+      <link>https://koabula.github.io/cn/post/3_p2p_network/</link>
+      <pubDate>Sat, 07 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/3_p2p_network/</guid>
+      
+        <description>&lt;h2 id=&#34;p2p网络&#34;&gt;P2P网络&lt;/h2&gt;
+&lt;p&gt;我们前面谈到的区块链仿佛都运行在同一个设备上，但实际上区块链是由许多节点组成的分布式系统。每个节点都是网络的参与者，节点之间通过P2P进行通信和同步。&lt;/p&gt;
+&lt;p&gt;区块链节点的功能有：储存数据，验证交易，参与共识，网络通信等
+而根据功能和权限的不同，区块链节点也有很多分类，不过在这里我们简化为两类：全节点(Full Node)和轻节点(Simple Node)，全节点储存了整个区块，而轻节点只储存了每个区块的区块头&lt;/p&gt;
+&lt;p&gt;下面我们讨论一下节点的合作&lt;/p&gt;
+&lt;h3 id=&#34;p2p网络-1&#34;&gt;P2P网络&lt;/h3&gt;
+&lt;p&gt;P2P(Peer to Peer)网络是区块链的基础架构,它允许节点之间直接进行通信,而不需要中心服务器。每个节点既是服务器也是客户端,可以向其他节点请求数据,也可以为其他节点提供数据。&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(二 Merkle树)</title>
+      <link>https://koabula.github.io/cn/post/2_merkle_tree/</link>
+      <pubDate>Fri, 06 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/2_merkle_tree/</guid>
+      
+        <description>&lt;h2 id=&#34;merkle树&#34;&gt;Merkle树&lt;/h2&gt;
+&lt;p&gt;上篇文章中我们展示的简化区块链中，每个区块中储存了一个Merkle Root，这是这个区块下Merkle树的根。这一节我们将从这个Merkle Tree开始讲起。
+&lt;img src=&#34;../../images/image.png&#34; alt=&#34;alt text&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;什么是merkle树&#34;&gt;什么是Merkle树&lt;/h3&gt;
+&lt;p&gt;Merkle Tree(默克尔树)也叫哈希树，它是一个树形结构,树的叶子节点是数据块的哈希值,非叶子节点是其对应子节点串联字符串的哈希值。&lt;/p&gt;
+&lt;p&gt;下面是一个简单的Merkle树结构，我们有A,B,C三个数据，分别计算哈希值作为叶子节点，然后两两配对，计算哈希值之和的哈希值，作为两个节点的父节点，父节点继续两两配对直到根节点。&lt;/p&gt;
+&lt;p&gt;我们注意到，我们如果在某一层只有奇数个节点时就无法两两配对(比如下图中就只有三个叶子节点)。我们选择将没有配对的节点与它的副本进行哈希处理。&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(一 简单的区块链)</title>
+      <link>https://koabula.github.io/cn/post/1_simple_blockchain/</link>
+      <pubDate>Thu, 05 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/1_simple_blockchain/</guid>
+      
+        <description>&lt;h2 id=&#34;一个最简单的区块链&#34;&gt;一个最简单的区块链&lt;/h2&gt;
+&lt;h3 id=&#34;区块链的构成&#34;&gt;区块链的构成&lt;/h3&gt;
+&lt;p&gt;我们先看一下区块链长什么样，下面是一个简化的比特币区块链示意图(图片来自 bitcoin.org)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/image.png&#34; alt=&#34;alt text&#34;&gt;&lt;/p&gt;
+&lt;p&gt;首先，区块链由一个个区块(block)构成，图片中的区块从左到右按顺序产生，右边为最新的区块。&lt;/p&gt;
+&lt;p&gt;区块分为区块头和区块体，区块头中储存了前一个区块的hash值，一个Merkle树(默克尔树)的根，区块体中储存了这个区块中的交易信息。&lt;/p&gt;
+&lt;p&gt;关于默克尔树和交易信息我们先暂且不表，下面我们简单实现一个只包含一个字符串数据的区块链&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;下面是区块类，由索引，时间戳，数据，前一个区块的哈希组成，创建时计算区块的哈希值储存下来&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;Block&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;fm&#34;&gt;__init__&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;previous_hash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timestamp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 当前时间戳&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;previous_hash&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;previous_hash&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;calculate_hash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;calculate_hash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# 计算区块的hash值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# 这里我们使用sha256算法&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;hashlib&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sha256&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;update&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timestamp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;previous_hash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hexdigest&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;fm&#34;&gt;__str__&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Block(index=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; timestamp=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timestamp&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; data=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; previous_hash=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;previous_hash&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; hash=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hash&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们在这里选择SHA256作为哈希算法，它有以下特性：&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>从零开始写一个区块链(零 引子)</title>
+      <link>https://koabula.github.io/cn/post/0_intro/</link>
+      <pubDate>Wed, 04 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/cn/post/0_intro/</guid>
+      
+        <description>&lt;h2 id=&#34;引子&#34;&gt;引子&lt;/h2&gt;
+&lt;p&gt;你或许听说过比特币，自从这个东西诞生以来，江湖上就一直有它的传说。有人因为它一夜暴富，跨越阶级；有人因为它耗尽家财，负债累累；也有的人同时有这两段经历，大起大落。有的国家将它作为法定货币，有的地区将它视为违法犯罪，更多时候它作为一种灰色产业出现。但是无论你见与不见，它一直在那里。&lt;/p&gt;
+&lt;p&gt;所以让我们来了解一下区块链这个东西吧&lt;/p&gt;
+&lt;h3 id=&#34;区块链为何而生&#34;&gt;区块链为何而生&lt;/h3&gt;
+&lt;p&gt;有人认为比特币的诞生就是一个骗局，最终这些数据的价值都会归零。但其实，比特币给出了一个现实问题的解决方案，而这个问题今天仍会困扰我们。那就是当我们网上购物时，如何信任一个在网线另一端的陌生人？在比特币诞生以前，还有现在的大多数时候，我们选择依靠一个可信任的第三方来处理电子支付，比如银行、微信、支付宝。但是，有人有不同的想法。&lt;/p&gt;
+&lt;p&gt;2008年，一个网名为中本聪(Satoshi Nakamoto)的人发布了一篇论文：&lt;em&gt;&lt;strong&gt;&amp;ldquo;Bitcoin: A Peer-to-Peer Electronic Cash System&amp;rdquo;&lt;/strong&gt;&lt;/em&gt; ，在这里第一次提出了区块链这个概念。他提出，要建立一个&amp;quot;基于密码学原理而不是信任的电子支付系统&amp;quot;。&lt;/p&gt;</description>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,701 @@
+<!doctype html>
+<html
+  dir="ltr"
+  lang="cn"
+  data-theme=""
+  
+    class="html theme--light"
+  
+><head>
+  <meta charset="utf-8" />
+  <title>
+    
+      
+        从零开始写一个区块链(三 P2P网络) |
+      Chang
+
+  </title>
+
+  <meta name="generator" content="Hugo 0.143.1"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Chang" />
+  <meta
+    name="description"
+    content="一只学写代码的🐨"
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.8d4fad7e6916ad2e291e8d97ada157c70350d6d7150fea137e7243340967befb.css"
+      integrity="sha256-jU&#43;tfmkWrS4pHo2XraFXxwNQ1tcVD&#43;oTfnJDNAlnvvs="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.73ccfdf28df555e11009c13c20ced067af3cb021504cba43644c705930428b00.css"
+    integrity="sha256-c8z98o31VeEQCcE8IM7QZ688sCFQTLpDZExwWTBCiwA="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.137b1cf3cea9a8adb7884343a9a5ddddf4280f59153f74dc782fb7f7bf0d0519.css"
+    integrity="sha256-E3sc886pqK23iENDqaXd3fQoD1kVP3TceC&#43;3978NBRk="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.e65dc5b48fb5f39b142360c57c3a215744c94e56c755c929cc3e88fe12aab4d3.css"
+    integrity="sha256-5l3FtI&#43;185sUI2DFfDohV0TJTlbHVckpzD6I/hKqtNM="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.6f4f16d58da1c82c0c3a3436e021a3d39b4742f741192c546e73e947eacfd92f.css"
+    integrity="sha256-b08W1Y2hyCwMOjQ24CGj05tHQvdBGSxUbnPpR&#43;rP2S8="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.e10425ad768bc98ff1fb272a0ac8420f9d1ba22f0612c08ff1010c95080ffe7e.css"
+    integrity="sha256-4QQlrXaLyY/x&#43;ycqCshCD50boi8GEsCP8QEMlQgP/n4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://koabula.github.io/cn/post/3_p2p_network/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.d6d329d93844b162e8bed1e915619625ca91687952177552b9b3e211014a2957.js"
+      integrity="sha256-1tMp2ThEsWLovtHpFWGWJcqRaHlSF3VSubPiEQFKKVc="
+      crossorigin="anonymous"
+    ></script>
+  
+
+  
+
+  
+
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://koabula.github.io/images/site-feature-image.png">
+  <meta name="twitter:title" content="从零开始写一个区块链(三 P2P网络)">
+  <meta name="twitter:description" content="P2P网络 我们前面谈到的区块链仿佛都运行在同一个设备上，但实际上区块链是由许多节点组成的分布式系统。每个节点都是网络的参与者，节点之间通过P2P进行通信和同步。
+区块链节点的功能有：储存数据，验证交易，参与共识，网络通信等 而根据功能和权限的不同，区块链节点也有很多分类，不过在这里我们简化为两类：全节点(Full Node)和轻节点(Simple Node)，全节点储存了整个区块，而轻节点只储存了每个区块的区块头
+下面我们讨论一下节点的合作
+P2P网络 P2P(Peer to Peer)网络是区块链的基础架构,它允许节点之间直接进行通信,而不需要中心服务器。每个节点既是服务器也是客户端,可以向其他节点请求数据,也可以为其他节点提供数据。">
+
+
+
+  
+  <meta property="og:url" content="https://koabula.github.io/cn/post/3_p2p_network/">
+  <meta property="og:site_name" content="My blog">
+  <meta property="og:title" content="从零开始写一个区块链(三 P2P网络)">
+  <meta property="og:description" content="P2P网络 我们前面谈到的区块链仿佛都运行在同一个设备上，但实际上区块链是由许多节点组成的分布式系统。每个节点都是网络的参与者，节点之间通过P2P进行通信和同步。
+区块链节点的功能有：储存数据，验证交易，参与共识，网络通信等 而根据功能和权限的不同，区块链节点也有很多分类，不过在这里我们简化为两类：全节点(Full Node)和轻节点(Simple Node)，全节点储存了整个区块，而轻节点只储存了每个区块的区块头
+下面我们讨论一下节点的合作
+P2P网络 P2P(Peer to Peer)网络是区块链的基础架构,它允许节点之间直接进行通信,而不需要中心服务器。每个节点既是服务器也是客户端,可以向其他节点请求数据,也可以为其他节点提供数据。">
+  <meta property="og:locale" content="cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2024-12-07T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-12-07T00:00:00+00:00">
+    <meta property="og:image" content="https://koabula.github.io/images/site-feature-image.png">
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "post",
+        "name": "从零开始写一个区块链(三 P2P网络)",
+        "headline": "从零开始写一个区块链(三 P2P网络)",
+        "alternativeHeadline": "",
+        "description": "
+      
+        \u003ch2 id=\u0022p2p网络\u0022\u003eP2P网络\u003c\/h2\u003e\n\u003cp\u003e我们前面谈到的区块链仿佛都运行在同一个设备上，但实际上区块链是由许多节点组成的分布式系统。每个节点都是网络的参与者，节点之间通过P2P进行通信和同步。\u003c\/p\u003e\n\u003cp\u003e区块链节点的功能有：储存数据，验证交易，参与共识，网络通信等\n而根据功能和权限的不同，区块链节点也有很多分类，不过在这里我们简化为两类：全节点(Full Node)和轻节点(Simple Node)，全节点储存了整个区块，而轻节点只储存了每个区块的区块头\u003c\/p\u003e\n\u003cp\u003e下面我们讨论一下节点的合作\u003c\/p\u003e\n\u003ch3 id=\u0022p2p网络-1\u0022\u003eP2P网络\u003c\/h3\u003e\n\u003cp\u003eP2P(Peer to Peer)网络是区块链的基础架构,它允许节点之间直接进行通信,而不需要中心服务器。每个节点既是服务器也是客户端,可以向其他节点请求数据,也可以为其他节点提供数据。\u003c\/p\u003e
+
+
+      
+
+
+    ",
+        "inLanguage": "cn",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/koabula.github.io\/cn\/post\/3_p2p_network\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightYear" : "2024",
+        "dateCreated": "2024-12-07T00:00:00.00Z",
+        "datePublished": "2024-12-07T00:00:00.00Z",
+        "dateModified": "2024-12-07T00:00:00.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Chang",
+            "url": "https://koabula.github.io/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/koabula.github.io\/favicons\/favicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+        
+        "https://koabula.github.io/images/site-feature-image.png"
+
+
+      
+      ]
+
+    ,
+        "url" : "https:\/\/koabula.github.io\/cn\/post\/3_p2p_network\/",
+        "wordCount" : "209",
+        "genre" : [ 
+      
+      "blockchain"
+
+    
+      
+        ,
+
+      
+      "web3"
+
+    ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+</head>
+<body class="body">
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/cn">Chang</a>
+        </div>
+      
+      <div class="sidebar__introduction-description">
+        <p>一只学写代码的🐨</p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://www.zhihu.com/people/jiang-nan-san-ren-59"
+            target="_blank"
+            rel="noopener me"
+            aria-label="Linkedin"
+            title="Linkedin"
+          >
+            <i class="fa-brands fa-zhihu fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://github.com/koabula"
+            target="_blank"
+            rel="noopener me"
+            aria-label="GitHub"
+            title="GitHub"
+          >
+            <i class="fa-brands fa-github fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="mailto:koabula@126.com"
+            target="_blank"
+            rel="noopener me"
+            aria-label="e-mail"
+            title="e-mail"
+          >
+            <i class="fa-solid fa-envelope fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-T0NN5Q0B29"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-T0NN5Q0B29');
+        }
+      </script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/post/"
+              
+              title=""
+              >文章</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/portfolio/"
+              
+              title=""
+              >项目</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/about/"
+              
+              title=""
+              >关于</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/contact/"
+              
+              title=""
+              >联系</a
+            >
+          </li>
+        
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+        <li class="nav__list-item">
+          <div class="optionswitch">
+            <input class="optionswitch__picker" type="checkbox" id="languagepicker" hidden />
+            <label class="optionswitch__label" for="languagepicker"
+              >CN <i class="fa fa-angle-down" aria-hidden="true"></i
+            ></label>
+            <div class="optionswitch__triangle"></div>
+            <ul class="optionswitch__list">
+              
+                <li class="optionswitch__list-item">
+                  <a href="/post/3_p2p_network/" title="EN"
+                    ><span
+                      
+                      aria-label="EN"
+                      >EN</span
+                    >
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </li>
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+    "
+  >
+    
+    <div class="post__content">
+      
+        <h1>从零开始写一个区块链(三 P2P网络)</h1>
+      
+      
+        <ul class="post__meta">
+          <li class="post__meta-item">
+            <em class="fas fa-calendar-day post__meta-icon"></em>
+            <span class="post__meta-text"
+              >
+                
+                  7/12/2024
+                
+
+              
+            </span>
+          </li>
+          <li class="post__meta-item">
+            <em class="fas fa-stopwatch post__meta-icon"></em>
+            <span class="post__meta-text">One-minute read</span>
+          </li>
+        </ul>
+      <h2 id="p2p网络">P2P网络</h2>
+<p>我们前面谈到的区块链仿佛都运行在同一个设备上，但实际上区块链是由许多节点组成的分布式系统。每个节点都是网络的参与者，节点之间通过P2P进行通信和同步。</p>
+<p>区块链节点的功能有：储存数据，验证交易，参与共识，网络通信等
+而根据功能和权限的不同，区块链节点也有很多分类，不过在这里我们简化为两类：全节点(Full Node)和轻节点(Simple Node)，全节点储存了整个区块，而轻节点只储存了每个区块的区块头</p>
+<p>下面我们讨论一下节点的合作</p>
+<h3 id="p2p网络-1">P2P网络</h3>
+<p>P2P(Peer to Peer)网络是区块链的基础架构,它允许节点之间直接进行通信,而不需要中心服务器。每个节点既是服务器也是客户端,可以向其他节点请求数据,也可以为其他节点提供数据。</p>
+<p>在我们的区块链中，我们需要节点之间交换数据，将数据打包成区块然后组成一条有共识的区块链。所以节点之间需要有网络通讯,当一个新节点加入网络时,它需要:</p>
+<ol>
+<li>连接到已知节点(种子节点)</li>
+<li>从这些节点获取其他节点的地址</li>
+<li>同步数据</li>
+</ol>
+<blockquote>
+<p>什么是<strong>种子节点</strong>？</p></blockquote>
+<p>一个新节点想要加入这个区块链网络，首先需要和其他节点建立连接，同步当前的区块链。那么这第一步便产生了问题，要到哪里去找其他节点？
+于是，我们在这个网络中设置了一类叫做种子节点的节点，它们的地址被硬编码在节点代码里。当新节点起步时会首先连接这些种子节点，然后从它们那里获取其他节点的地址</p>
+<blockquote>
+<p>如何更新节点状态？</p></blockquote>
+<p>如果网络运行中一个节点离线了，或者新加入了一个节点，如何在其他节点中更新其状态呢？
+我们可以使用心跳机制，让节点每隔一段时间向所有节点发送一条简短的信息(心跳)。如果接收到新节点的心跳就将其添加到节点列表中，如果一段时间后没有接收到某节点的心跳就视作该节点已经故障或离线</p>
+<p>下面我们实现一个可以进行p2p通信的简单节点网络。</p>
+<p>我们先思考一下我们p2p网络的结构应该怎么设计：(这只是一个简单的示例，现实中的实现不一定是这样的)</p>
+<ol>
+<li>节点建立时，向硬编码的种子节点发出加入网络的请求。种子节点将新节点加入列表，同时向所有节点介绍这个新节点</li>
+<li>节点收到一个介绍信息后，将其加入节点列表中，同时向该节点发送hello消息</li>
+<li>新节点接收到hello消息后，将发送方加入自己的节点列表中，这样便实现了节点列表的更新</li>
+<li>每隔一段时间节点会广播hello消息，接收到hello消息后节点要储存当前时间，如果长时间未接收到某节点的hello消息则在节点列表中删除</li>
+</ol>
+<p>下面是形而下的实现</p>
+<ol>
+<li>我们首先建立节点类，初始化节点地址。其中，<code>peers</code>储存已知网络中的节点地址，初始化填入了种子节点；<code>hello_dict</code>储存上一次接收到其他节点hello消息的时间。使用<code>send_join</code>向种子节点发出加入网络的请求</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">ip</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">peers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;127.0.0.1&#34;</span><span class="p">}</span>  <span class="c1"># 种子节点</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">ip</span><span class="p">,</span> <span class="mi">5000</span><span class="p">))</span>    <span class="c1"># 监听5000端口</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">hello_dict</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">send_join</span><span class="p">()</span>    <span class="c1"># 发送加入消息</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">handle_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_connection</span><span class="p">)</span>    <span class="c1"># 处理连接</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">handle_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">helloloop_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">helloloop</span><span class="p">)</span>    <span class="c1"># hello消息检测</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">helloloop_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">mainloop_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mainloop</span><span class="p">)</span>    <span class="c1"># 主循环</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">mainloop_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></span></code></pre></div><ol start="2">
+<li>然后我们定义一系列消息传递方法，定义了一系列的通信方式。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">send_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peers</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">peer</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">peer</span><span class="p">,</span> <span class="mi">5000</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">s</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Failed to send message to </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">send_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">send_msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;@DATA</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">send_hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">send_msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;@HELLO</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">send_join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">send_msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;@JOIN</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">send_intro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">addr</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">send_msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;#INTRO</span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><ol start="3">
+<li>下面定义<code>handle_connection</code>方法接收消息并处理，<code>mainloop</code>执行一系列任务，<code>helloloop</code>处理hello信息</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">handle_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&#34;@DATA&#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">:])</span>
+</span></span><span class="line"><span class="cl">            <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&#34;@HELLO&#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="n">formaddr</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">peers</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">formaddr</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">hello_dict</span><span class="p">[</span><span class="n">formaddr</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&#34;@JOIN&#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="n">formaddr</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">send_intro</span><span class="p">(</span><span class="n">formaddr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">peers</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">formaddr</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Join </span><span class="si">{</span><span class="n">formaddr</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&#34;#INTRO&#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="n">formaddr</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">peers</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">formaddr</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Intro </span><span class="si">{</span><span class="n">formaddr</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>   
+</span></span><span class="line"><span class="cl">            <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;This is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">helloloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">send_hello</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hello_dict</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">hello_dict</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="bp">self</span><span class="o">.</span><span class="n">peers</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></span></code></pre></div><ol start="4">
+<li>我们进行简单的测试:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ip</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&#34;Enter IP address: &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span></span></code></pre></div><p><img src="../../images/image2.png" alt="alt text"></p>
+<p>开启3个终端建立3个节点，节点之间可以相互通信。</p>
+<blockquote>
+<p>种子节点这么重要，会不会产生中心化？</p></blockquote>
+<p>有人或许会说，每个节点刚开始时都要首先和种子节点打交道，这会不会违背了去中心化的初衷。实际上我们可以发现，当新节点接入网络后，种子节点和其他节点并没有区别，如果种子节点离线了也不会对现在的网络造成影响。而接入网络时，我们可以设置多个种子节点来增加稳定性。甚至我们可以选择添加熟人节点来启动新节点，也就是通过其他途径，获取接入网络的某些节点地址，用它们来替代种子节点。
+在实际运行的区块链中，这个网络会更加复杂，节点的类型也不止这些。</p>
+<p>这一节我们建立了多个节点，并且把这些节点接入了一个p2p网络，下面我们将聊聊怎么让这些节点合作维护一个区块链</p>
+</div>
+    <div class="post__footer">
+      
+        <span><a class="category" href="/cn/categories/blockchain/">blockchain</a><a class="category" href="/cn/categories/web3/">web3</a></span>
+
+
+      
+
+      
+    </div>
+
+    
+  </div>
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-T0NN5Q0B29"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-T0NN5Q0B29');
+        }
+      </script></body>
+</html>
