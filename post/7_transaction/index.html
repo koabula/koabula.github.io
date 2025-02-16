@@ -213,7 +213,7 @@
 
     ,
         "url" : "https:\/\/koabula.github.io\/post\/7_transaction\/",
-        "wordCount" : "761",
+        "wordCount" : "762",
         "genre" : [ 
       
       "blockchain"
@@ -811,7 +811,7 @@
 <p>如果你知道哈希表，那你可能会问：这样不会发生哈希碰撞吗？你或许听过: &ldquo;一个屋子里只要超过23个人，那么就有50%的可能性有两个人同一天出生&rdquo; ，这个数学结论(生日攻击)在这里就不适用了吗？</p>
 <p>这就要谈到SHA256的抗碰撞性了，下面我们简单算笔账:</p>
 <p>首先我们看一下生日攻击，如果取值范围为N，需要取k个值，那么没有碰撞的概率为 $ P_{没有碰撞}=\frac{N(N-1)&hellip;(N-k+1)}{N^k} $ 那么发生碰撞的概率就是</p>
-<p>$ P_{碰撞} = 1-\frac{N(N-1)&hellip;(N-k+1)}{N^k} = 1- \Pi_{i=0}^{k-1}(1-\frac{i}{N})$</p>
+<p>\( P_{碰撞} = 1-\frac{N(N-1)&hellip;(N-k+1)}{N^k} = 1- \Pi_{i=0}^{k-1}(1-\frac{i}{N}) \)</p>
 <p>当x较小时$ ln(1-x) \approx -x $</p>
 <p>计算$ ln(\Pi_{i=0}^{k-1}(1-\frac{i}{N})) =  \sum_{i=0}^{k-1}ln(1-\frac{i}{N}) \approx - \frac{\sum_{i=0}^{k-1} i}{N} = -\frac{k(k-1)}{2N}$</p>
 <p>所以去掉对数放回概率中，$P_{碰撞}=1-e^{-\frac{k(k-1)}{2N}}$</p>
