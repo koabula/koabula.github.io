@@ -6,7 +6,25 @@
     <description>Recent content in Blockchain on My blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 11 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://koabula.github.io/categories/blockchain/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 10 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://koabula.github.io/categories/blockchain/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>区块链是如何升级的</title>
+      <link>https://koabula.github.io/post/8_how-does-blockchain-upgrade/</link>
+      <pubDate>Mon, 10 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://koabula.github.io/post/8_how-does-blockchain-upgrade/</guid>
+      
+        <description>&lt;h2 id=&#34;区块链是如何升级的&#34;&gt;区块链是如何升级的&lt;/h2&gt;
+&lt;p&gt;今天开始学习一些BIP和EIP的内容，开个新的专栏记录一下&lt;/p&gt;
+&lt;h3 id=&#34;什么是bip和eip&#34;&gt;什么是BIP和EIP&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;BIP和EIP分别指的是Bitcoin Improvement Proposal和Ethereum Improvement Proposal，可以说它是一份正式文档，提出比特币协议、网络或相关软件的改进建议。简单来说，就是比特币社区的“升级提案书”，由开发者撰写并提交，供大家讨论和实施。&lt;/p&gt;
+&lt;h3 id=&#34;区块链的升级&#34;&gt;区块链的升级&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;自从2009年比特币创世以来，我们肯定已经听过不少关于比特币的升级和修改，现在在比特币网络节点中运行的代码自然和09年的代码不同。但是，既然区块链是去中心化的，自然没有一个人能强行命令所有节点更新代码。那么，比特币的代码又是如何更新的呢？&lt;/p&gt;</description>
+      
+    </item>
+    
     <item>
       <title>从零开始写一个区块链(七 交易)</title>
       <link>https://koabula.github.io/post/7_transaction/</link>

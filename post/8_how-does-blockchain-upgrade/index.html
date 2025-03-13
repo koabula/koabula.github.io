@@ -1,0 +1,627 @@
+<!doctype html>
+<html
+  dir="ltr"
+  lang="en"
+  data-theme=""
+  
+    class="html theme--light"
+  
+><head>
+  <meta charset="utf-8" />
+  <title>
+    
+      
+        区块链是如何升级的 |
+      Chang
+
+  </title>
+
+  <meta name="generator" content="Hugo 0.143.1"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="author" content="Chang" />
+  <meta
+    name="description"
+    content="一只学写代码的🐨"
+  />
+  
+  
+    
+    
+    <link
+      rel="stylesheet"
+      href="/scss/main.min.8d4fad7e6916ad2e291e8d97ada157c70350d6d7150fea137e7243340967befb.css"
+      integrity="sha256-jU&#43;tfmkWrS4pHo2XraFXxwNQ1tcVD&#43;oTfnJDNAlnvvs="
+      crossorigin="anonymous"
+      type="text/css"
+    />
+  
+
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.73ccfdf28df555e11009c13c20ced067af3cb021504cba43644c705930428b00.css"
+    integrity="sha256-c8z98o31VeEQCcE8IM7QZ688sCFQTLpDZExwWTBCiwA="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/fontawesome.min.137b1cf3cea9a8adb7884343a9a5ddddf4280f59153f74dc782fb7f7bf0d0519.css"
+    integrity="sha256-E3sc886pqK23iENDqaXd3fQoD1kVP3TceC&#43;3978NBRk="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/solid.min.e65dc5b48fb5f39b142360c57c3a215744c94e56c755c929cc3e88fe12aab4d3.css"
+    integrity="sha256-5l3FtI&#43;185sUI2DFfDohV0TJTlbHVckpzD6I/hKqtNM="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/regular.min.6f4f16d58da1c82c0c3a3436e021a3d39b4742f741192c546e73e947eacfd92f.css"
+    integrity="sha256-b08W1Y2hyCwMOjQ24CGj05tHQvdBGSxUbnPpR&#43;rP2S8="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="/fontawesome/css/brands.min.e10425ad768bc98ff1fb272a0ac8420f9d1ba22f0612c08ff1010c95080ffe7e.css"
+    integrity="sha256-4QQlrXaLyY/x&#43;ycqCshCD50boi8GEsCP8QEMlQgP/n4="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+
+  <link rel="canonical" href="https://koabula.github.io/post/8_how-does-blockchain-upgrade/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.f9132794301a01ff16550ed66763482bd848f62243d278f5e550229a158bfd32.js"
+    integrity="sha256-&#43;RMnlDAaAf8WVQ7WZ2NIK9hI9iJD0nj15VAimhWL/TI="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.d6d329d93844b162e8bed1e915619625ca91687952177552b9b3e211014a2957.js"
+      integrity="sha256-1tMp2ThEsWLovtHpFWGWJcqRaHlSF3VSubPiEQFKKVc="
+      crossorigin="anonymous"
+    ></script>
+  
+
+  
+
+  
+
+
+  
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://koabula.github.io/images/site-feature-image.png">
+  <meta name="twitter:title" content="区块链是如何升级的">
+  <meta name="twitter:description" content="区块链是如何升级的 今天开始学习一些BIP和EIP的内容，开个新的专栏记录一下
+什么是BIP和EIP BIP和EIP分别指的是Bitcoin Improvement Proposal和Ethereum Improvement Proposal，可以说它是一份正式文档，提出比特币协议、网络或相关软件的改进建议。简单来说，就是比特币社区的“升级提案书”，由开发者撰写并提交，供大家讨论和实施。
+区块链的升级 自从2009年比特币创世以来，我们肯定已经听过不少关于比特币的升级和修改，现在在比特币网络节点中运行的代码自然和09年的代码不同。但是，既然区块链是去中心化的，自然没有一个人能强行命令所有节点更新代码。那么，比特币的代码又是如何更新的呢？">
+
+
+
+  
+  <meta property="og:url" content="https://koabula.github.io/post/8_how-does-blockchain-upgrade/">
+  <meta property="og:site_name" content="My blog">
+  <meta property="og:title" content="区块链是如何升级的">
+  <meta property="og:description" content="区块链是如何升级的 今天开始学习一些BIP和EIP的内容，开个新的专栏记录一下
+什么是BIP和EIP BIP和EIP分别指的是Bitcoin Improvement Proposal和Ethereum Improvement Proposal，可以说它是一份正式文档，提出比特币协议、网络或相关软件的改进建议。简单来说，就是比特币社区的“升级提案书”，由开发者撰写并提交，供大家讨论和实施。
+区块链的升级 自从2009年比特币创世以来，我们肯定已经听过不少关于比特币的升级和修改，现在在比特币网络节点中运行的代码自然和09年的代码不同。但是，既然区块链是去中心化的，自然没有一个人能强行命令所有节点更新代码。那么，比特币的代码又是如何更新的呢？">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2025-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-03-10T00:00:00+00:00">
+    <meta property="og:image" content="https://koabula.github.io/images/site-feature-image.png">
+
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "post",
+        "name": "区块链是如何升级的",
+        "headline": "区块链是如何升级的",
+        "alternativeHeadline": "",
+        "description": "
+      
+        \u003ch2 id=\u0022区块链是如何升级的\u0022\u003e区块链是如何升级的\u003c\/h2\u003e\n\u003cp\u003e今天开始学习一些BIP和EIP的内容，开个新的专栏记录一下\u003c\/p\u003e\n\u003ch3 id=\u0022什么是bip和eip\u0022\u003e什么是BIP和EIP\u003c\/h3\u003e\n\u003chr\u003e\n\u003cp\u003eBIP和EIP分别指的是Bitcoin Improvement Proposal和Ethereum Improvement Proposal，可以说它是一份正式文档，提出比特币协议、网络或相关软件的改进建议。简单来说，就是比特币社区的“升级提案书”，由开发者撰写并提交，供大家讨论和实施。\u003c\/p\u003e\n\u003ch3 id=\u0022区块链的升级\u0022\u003e区块链的升级\u003c\/h3\u003e\n\u003chr\u003e\n\u003cp\u003e自从2009年比特币创世以来，我们肯定已经听过不少关于比特币的升级和修改，现在在比特币网络节点中运行的代码自然和09年的代码不同。但是，既然区块链是去中心化的，自然没有一个人能强行命令所有节点更新代码。那么，比特币的代码又是如何更新的呢？\u003c\/p\u003e
+
+
+      
+
+
+    ",
+        "inLanguage": "en",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/koabula.github.io\/post\/8_how-does-blockchain-upgrade\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "Chang"
+        },
+        "copyrightYear" : "2025",
+        "dateCreated": "2025-03-10T00:00:00.00Z",
+        "datePublished": "2025-03-10T00:00:00.00Z",
+        "dateModified": "2025-03-10T00:00:00.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "Chang",
+            "url": "https://koabula.github.io/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/koabula.github.io\/favicons\/favicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+        
+        "https://koabula.github.io/images/site-feature-image.png"
+
+
+      
+      ]
+
+    ,
+        "url" : "https:\/\/koabula.github.io\/post\/8_how-does-blockchain-upgrade\/",
+        "wordCount" : "77",
+        "genre" : [ 
+      
+      "blockchain"
+
+    
+      
+        ,
+
+      
+      "web3"
+
+    ],
+        "keywords" : [ ]
+    }
+  </script>
+
+
+</head>
+<body class="body">
+    <div class="wrapper">
+      <aside
+        
+          class="wrapper__sidebar"
+        
+      ><div
+  class="sidebar
+    animated fadeInDown
+  "
+>
+  <div class="sidebar__content">
+    <div class="sidebar__introduction">
+      <img
+        class="sidebar__introduction-profileimage"
+        src="/images/profile.jpg"
+        alt="profile picture"
+      />
+      
+        <div class="sidebar__introduction-title">
+          <a href="/">Chang</a>
+        </div>
+      
+      <div class="sidebar__introduction-description">
+        <p>一只学写代码的🐨</p>
+      </div>
+    </div>
+    <ul class="sidebar__list">
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://www.zhihu.com/people/jiang-nan-san-ren-59"
+            target="_blank"
+            rel="noopener me"
+            aria-label="Linkedin"
+            title="Linkedin"
+          >
+            <i class="fa-brands fa-zhihu fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="https://github.com/koabula"
+            target="_blank"
+            rel="noopener me"
+            aria-label="GitHub"
+            title="GitHub"
+          >
+            <i class="fa-brands fa-github fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+        <li class="sidebar__list-item">
+          <a
+            href="mailto:koabula@126.com"
+            target="_blank"
+            rel="noopener me"
+            aria-label="e-mail"
+            title="e-mail"
+          >
+            <i class="fa-solid fa-envelope fa-2x" aria-hidden="true"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div><footer class="footer footer__sidebar">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-6W03JJK5LC"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-6W03JJK5LC');
+        }
+      </script></div>
+</aside>
+      <main
+        
+          class="wrapper__main"
+        
+      >
+        <header class="header"><div
+  class="
+    animated fadeInDown
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+    <span aria-hidden="true" class="navbar-burger__line"></span>
+  </a>
+  <nav class="nav">
+    <ul class="nav__list" id="navMenu">
+      
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/"
+              
+              title=""
+              >Home</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/post/"
+              
+              title=""
+              >Posts</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/portfolio/"
+              
+              title=""
+              >Projects</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/about/"
+              
+              title=""
+              >About</a
+            >
+          </li>
+        
+
+      
+        
+        
+          <li class="nav__list-item">
+            
+            <a
+              
+              href="/contact/"
+              
+              title=""
+              >Contact</a
+            >
+          </li>
+        
+
+      
+    </ul>
+    <ul class="nav__list nav__list--end">
+      
+        <li class="nav__list-item">
+          <div class="optionswitch">
+            <input class="optionswitch__picker" type="checkbox" id="languagepicker" hidden />
+            <label class="optionswitch__label" for="languagepicker"
+              >EN <i class="fa fa-angle-down" aria-hidden="true"></i
+            ></label>
+            <div class="optionswitch__triangle"></div>
+            <ul class="optionswitch__list">
+              
+                <li class="optionswitch__list-item">
+                  <a href="/cn/post/8_how-does-blockchain-upgrade/" title="CN"
+                    ><span
+                      
+                      aria-label="CN"
+                      >CN</span
+                    >
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </li>
+      
+      
+        <li class="nav__list-item">
+          <div class="themeswitch">
+            <a title="Switch Theme">
+              <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </div>
+        </li>
+      
+    </ul>
+  </nav>
+</div>
+</header>
+  <div
+    class="post 
+      animated fadeInDown
+    "
+  >
+    
+    <div class="post__content">
+      
+        <h1>区块链是如何升级的</h1>
+      
+      
+        <ul class="post__meta">
+          <li class="post__meta-item">
+            <em class="fas fa-calendar-day post__meta-icon"></em>
+            <span class="post__meta-text"
+              >
+                
+                  10/3/2025
+                
+
+              
+            </span>
+          </li>
+          <li class="post__meta-item">
+            <em class="fas fa-stopwatch post__meta-icon"></em>
+            <span class="post__meta-text">One-minute read</span>
+          </li>
+        </ul>
+      <h2 id="区块链是如何升级的">区块链是如何升级的</h2>
+<p>今天开始学习一些BIP和EIP的内容，开个新的专栏记录一下</p>
+<h3 id="什么是bip和eip">什么是BIP和EIP</h3>
+<hr>
+<p>BIP和EIP分别指的是Bitcoin Improvement Proposal和Ethereum Improvement Proposal，可以说它是一份正式文档，提出比特币协议、网络或相关软件的改进建议。简单来说，就是比特币社区的“升级提案书”，由开发者撰写并提交，供大家讨论和实施。</p>
+<h3 id="区块链的升级">区块链的升级</h3>
+<hr>
+<p>自从2009年比特币创世以来，我们肯定已经听过不少关于比特币的升级和修改，现在在比特币网络节点中运行的代码自然和09年的代码不同。但是，既然区块链是去中心化的，自然没有一个人能强行命令所有节点更新代码。那么，比特币的代码又是如何更新的呢？</p>
+<p><strong>相关阅读:</strong> <a href="https://github.com/bitcoin/bips/blob/master/bip-0034.mediawiki">BIP34</a> , <a href="https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki">BIP9</a></p>
+<h3 id="比特币从version1到version2">比特币从version1到version2</h3>
+<hr>
+<p>在比特币区块的区块头中，储存了一个version变量，用来记录当前区块的版本号，在2012年BIP34推动了区块的version从1变成了2，让我们看看具体做了些什么：</p>
+<p>BIP34规定，将区块的高度加入到该区块的coinbase交易中(coinbase交易就是每个区块的第一笔交易，生成一定的比特币奖励给矿工)，并且，将区块的version改为2。</p>
+<p>这一修改首先不会影响当前的共识机制，一个version为2的区块被广播到一个未升级的节点时，该节点不会拒绝这个区块，这就是升级的向下兼容性，所以BIP34规定下的升级是一种软分叉。</p>
+<p>这一修改也增强了交易的唯一性。在此之前，如果一个节点挖掘到了两个区块，可能会产生有相同哈希的两个coinbase交易，但是我们使用哈希值来唯一标识交易，这样就会导致冲突。而BIP34之后，为每个coinbase交易添加了一个唯一的信息，区块高度。这样减小了交易哈希冲突的可能性。同时也为后面的一些升级提供了一个可靠的标识。</p>
+<p>在BIP34实施以后，比特币网络中同时存在升级和未升级的节点，区块链中也同时存在version1和version2的区块。那么什么时候才能彻底升级？BIP34中规定了下面两条规则:</p>
+<ol>
+<li>75% rule: 如果前1000个区块中，有750个区块的version大于等于2时，拒绝无效的version2区块。也就是避免节点作弊，只修改了版本号却没有进行内部代码的更新。</li>
+<li>95% rule: 如果前1000个区块中，有950个区块的version大于等于2，拒绝所有version小于2的区块。此时大部分(大于95%)的算力已经达成了升级的共识，开始拒绝那些没有升级的节点挖掘的区块。升级后节点的区块可以被未升级的节点接受，但是那些未升级的节点挖掘的version1区块会被升级的节点抛弃，成为孤块。这样在大部分算力达成升级共识后，用激励迫使少数节点升级。</li>
+</ol>
+<p>第227,835 (timestamp 2013-03-24 15:49:13 GMT)是最后一个version1的区块，此后便实现了version1到version2的升级</p>
+<blockquote>
+<p>什么是<strong>软分叉</strong>，什么是<strong>硬分叉</strong>
+软分叉和硬分叉是两种不同的协议升级方式，简单来说，软分叉是对现有规则的收紧或限制，是<strong>向后兼容的</strong>，未升级的节点依旧可以接受升级了的区块，即使他们可能不理解其中的一些新规则；
+而硬分叉是对现有规则的放宽或彻底改变，<strong>不向后兼容</strong>，未升级的节点会拒绝升级了的区块，可能导致区块链的分裂。</p></blockquote>
+<h3 id="一些问题">一些问题</h3>
+<hr>
+<p>BIP34提供了一个良好的更新方式，但是它还有一些问题：一是它一次只能进行一次更新，如果同时有多个特性需要修改，需要进行提案的协调；二是它不允许永久拒绝，如果当前软分叉没有完全推出，就无法进行新的软分叉；三是每次更新后，可用的版本号空间就少了一个，这是不必要的。</p>
+<h3 id="bip-9">BIP-9</h3>
+<hr>
+<p>在2015年，比特币推出了BIP9，将版本字段看作一个位向量，向量的每一位都追踪了一个更新，当追踪的更新完成或超时后，会有一个休眠中断，然后版本字段对应的位就可以用于追踪新的更新。这样就实现了多个更新的并行部署，下面我们看看具体是怎么做的。</p>
+<p>BIP9中规定，区块头中的nVersion字段是一个32bit的小端序储存的整数，前三位应该为001。当前三位不为001时，将其他位视为0。这样，我们便有29个独立的bit可以表示正在部署的软分叉，也就是可以同时进行29个独立的升级。</p>
+<p>每个软分叉对应有4个重要参数：</p>
+<ul>
+<li><strong>name</strong>: 软分叉的标识符，不应该重复。对于单个BIP提出的软分叉，建议选择&quot;bipN&quot;作为name,N为BIP编号</li>
+<li><strong>bit</strong>: 用于确定nVersion字段的哪一位用于该软分叉，应该从{0,1,&hellip;,28}选择</li>
+<li><strong>starttime</strong>: 指定一个区块的最小过去中位时间(MTP)，从该时间起nVersion该位具有意义，大约在包括软分叉的软件发布日期后一个月</li>
+<li><strong>timeout</strong>: 超时时间，如果某区块的过去中位时间(MTP) &gt;= 超时时间且软分叉尚未锁定，则该软分叉视为部署失败，应为开始时间后 1 年</li>
+</ul>
+<blockquote>
+<p>这里我们补充一个概念，过去中位时间(MTP，median time past)
+比特币区块的区块头中有一个nTime字段，储存了挖掘到此区块时的时间戳。对于某个区块，MTP 是该区块及其前 10 个祖先区块，这11个区块的nTime的中位数， 提供了一个比单个区块时间戳更稳定的时间参考点</p></blockquote>
+<hr>
+<p>在一个软分叉被部署时，每个区块有5种对应的状态：</p>
+<ul>
+<li><strong>DEFINED</strong>: 每个软分叉开始时的第一个状态，创世区块对所有软分叉都为DEFINED状态</li>
+<li><strong>STARTED</strong>: 当区块MTP超过starttime时，转入该状态</li>
+<li><strong>LOCKED_IN</strong>: 当区块MTP没有超过timeout，且前面2016个区块中升级的区块超过了门槛(主网一般是95%)，进入LOCKED_IN状态。(为什么是2016在下面解释)</li>
+<li><strong>ACTIVE</strong>: LOCKED_IN之后就进入该状态，软分叉部署成功</li>
+<li><strong>FAILED</strong>: 如果超时以后还没达到LOCKED_IN状态，则进入FAILED状态，部署失败</li>
+</ul>
+<p>状态转移图如下
+<img src="../../images/image99.png" alt="alt text"></p>
+<blockquote>
+<p><strong>retarget period:</strong> 比特币网络中，将2016个区块视为一个周期，叫做retarget period。每个周期结束后，会根据前一个周期的反应调整挖矿难度，使得平均每十分钟生成一个新区块。而我们这里软分叉部署的状态转移也发生在两个retarget period交替时，所以进入LOCKED_IN状态时检查的是前2016个区块中更新的数量</p></blockquote>
+</div>
+    <div class="post__footer">
+      
+        <span><a class="category" href="/categories/blockchain/">blockchain</a><a class="category" href="/categories/web3/">web3</a></span>
+
+
+      
+
+      
+    </div>
+
+    
+  </div>
+
+      </main>
+    </div><footer class="footer footer__base">
+  <ul class="footer__list">
+    <li class="footer__item">
+      &copy;
+      
+        Chang
+        2025
+      
+    </li>
+    
+      <li class="footer__item">
+        <a
+          class="link"
+          href="/imprint/"
+          
+          title=""
+        >
+          imprint
+        </a>
+      </li>
+    
+  </ul>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.1248fa75275e5ef0cbef27e8c1e27dc507c445ae3a2c7d2ed0be0809555dac64.js"
+    integrity="sha256-Ekj6dSdeXvDL7yfoweJ9xQfERa46LH0u0L4ICVVdrGQ="
+    crossorigin="anonymous"
+  ></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR&#43;zwDAROtph0PXGte6ia8heboACF9R5l/DiY&#43;WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous" /><script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8&#43;w2LAIftJEULZABrF9PPFv&#43;tVkH" crossorigin="anonymous"></script><script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js"
+      integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB&#43;w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-6W03JJK5LC"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-6W03JJK5LC');
+        }
+      </script></body>
+</html>
