@@ -6,6 +6,7 @@ const terminalBody = document.querySelector('.terminal-main');
 const completions = document.querySelector('#completions');
 const commandHelp = {
   help: 'List commands',
+  edu: 'Education',
   projects: 'Open-source repositories',
   socials: 'GitHub and email',
   clear: 'Clear the terminal',
@@ -53,6 +54,12 @@ function printCommand(value) {
   const reply = document.createElement('div');
   reply.className = 'reply';
   if (command === 'help') showHelp(reply);
+  else if (command === 'edu') {
+    const schools = document.querySelectorAll('#education .school');
+    reply.textContent = Array.from(schools, school =>
+      Array.from(school.querySelectorAll('h3, p, .date'), field => field.textContent.trim()).join('\n')
+    ).join('\n\n');
+  }
   else if (command === 'projects') listLinks('.projects a', reply);
   else if (command === 'socials' || command === 'social') listLinks('.socials a', reply);
   else if (command === 'coffee') reply.textContent = 'Making a coffee for you ...\nCompilation speed +200% (˶ᵔ ᵕ ᵔ˶) ☕';
