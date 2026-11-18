@@ -187,14 +187,16 @@ async function loadActivity() {
   const useCache = validDays(cached?.days) && cached.days.at(-1).date >= bundledDays.at(-1).date;
   const current = useCache ? cached.days : bundledDays;
   renderCalendar(current);
-  if (useCache && cached.updated <= Date.now() && Date.now() - cached.updated < dayMs) return;
   try {
-    const response = await fetch('https://github-contributions-api.jogruber.de/v4/koabula?y=last', { signal: AbortSignal.timeout(8000) });
+    const response = await fetch('https://github-contributions-api.jogruber.de/v4/koabula?y=last', {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8000)
+    });
     if (!response.ok) return;
     const { contributions: days } = await response.json();
     if (!validDays(days) || days.at(-1).date < current.at(-1).date) return;
     if (JSON.stringify(days) !== JSON.stringify(current)) renderCalendar(days);
-    localStorage.setItem(cacheKey, JSON.stringify({ days, updated: Date.now() }));
+    localStorage.setItem(cacheKey, JSON.stringify({ days }));
   } catch {
     // The displayed snapshot remains usable offline or when storage is unavailable.
   }
